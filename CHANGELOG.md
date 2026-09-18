@@ -22,6 +22,8 @@ Code v99.99.999
 
 ## Unreleased
 
+## [4.137.1](https://github.com/MotusLabs/code-server/releases/tag/v4.137.1) - 2026-09-18
+
 ### Changed
 
 - Releases are published inside the organization only. The container image now
