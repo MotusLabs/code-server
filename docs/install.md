@@ -281,12 +281,16 @@ docker run -it --name code-server -p 127.0.0.1:8080:8080 \
   -v "$PWD:/home/coder/project" \
   -u "$(id -u):$(id -g)" \
   -e "DOCKER_USER=$USER" \
-  codercom/code-server:latest
+  ghcr.io/motuslabs/code-server:latest
 ```
 
-Our official image supports `amd64` and `arm64`. For `arm32` support, you can
-use a [community-maintained code-server
-alternative](https://hub.docker.com/r/linuxserver/code-server).
+The image supports `amd64` and `arm64`. It is published to this repository's
+GitHub Container Registry namespace, so pulling it needs a GitHub login with
+read access to the organization's packages:
+
+```console
+echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_USER" --password-stdin
+```
 
 ## Helm
 

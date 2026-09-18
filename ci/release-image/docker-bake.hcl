@@ -6,12 +6,17 @@ variable "VERSION" {
     default = "latest"
 }
 
+# Publishing happens inside the organization only. Docker Hub is disabled by
+# leaving this empty; gen_tags then generates no tags for it. Set it only if
+# the organization ever runs its own registry.
 variable "DOCKER_REGISTRY" {
-    default = "docker.io/codercom/code-server"
+    default = ""
 }
 
+# Overridden by the publish workflow with the ghcr.io namespace of whichever
+# repository is running it.
 variable "GITHUB_REGISTRY" {
-    default = "ghcr.io/coder/code-server"
+    default = "ghcr.io/motuslabs/code-server"
 }
 
 group "default" {

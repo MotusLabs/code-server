@@ -22,6 +22,15 @@ Code v99.99.999
 
 ## Unreleased
 
+### Changed
+
+- Releases are published inside the organization only. The container image now
+  goes to `ghcr.io/motuslabs/code-server` instead of Docker Hub and
+  `ghcr.io/coder/code-server`, and the npm and AUR publishing steps are gone.
+  `install.sh`, the Docker build and the Helm chart all read from this
+  repository's releases, so they install this fork's build rather than
+  upstream's.
+
 ### Fixed
 
 - Copying from the terminal with OSC 52 (used by tmux, vim, Claude Code and

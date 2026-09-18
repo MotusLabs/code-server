@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: codercom/code-server
+  repository: ghcr.io/motuslabs/code-server
   tag: '4.137.0'
   pullPolicy: Always
 

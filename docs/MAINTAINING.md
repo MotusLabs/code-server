@@ -5,10 +5,8 @@
 
 - [Releasing](#releasing)
     - [Release Candidates](#release-candidates)
-    - [AUR](#aur)
+    - [Release assets](#release-assets)
     - [Docker](#docker)
-    - [nixpkgs](#nixpkgs)
-    - [npm](#npm)
 - [Testing](#testing)
 - [Documentation](#documentation)
   - [Troubleshooting](#troubleshooting)
@@ -37,7 +35,6 @@ Most of the work is keeping on top of issues and discussions.
 6. Publish the draft release after validating it.
 7. Update the changelog with the release date and bump the Helm chart version
    once the Docker images have published.
-8. Merge the PR submitted to coder/code-server-aur repo.
 
 #### Release Candidates
 
@@ -50,31 +47,27 @@ full-blown release. To do this follow the same steps as above but:
 3. Do not update the chart version or merge in the changelog until the final
    release.
 
-#### AUR
+#### Release assets
 
-We publish to AUR as a package
-[here](https://aur.archlinux.org/packages/code-server/). This process is manual
-and can be done by following the steps in [this
-repo](https://github.com/coder/code-server-aur).
+Every release carries the platform-agnostic `package.tar.gz` plus the
+platform-specific `.deb`, `.rpm` and standalone tarballs, attached to the
+release in this repository. `install.sh` pulls from here, so it installs this
+fork's build and not upstream's.
 
 #### Docker
 
-We publish code-server as a Docker image
-[here](https://hub.docker.com/r/codercom/code-server), tagging it both with the
-version and latest.
+We publish code-server as a Docker image to this repository's GitHub Container
+Registry namespace, `ghcr.io/motuslabs/code-server`, tagging it both with the
+version and latest. This is automated with the release process and runs off the
+`.deb` and `.rpm` from the release above.
 
-This is currently automated with the release process.
+Consumers need a GitHub login with read access to the organization's packages,
+or the package has to be made visible to the organization in its package
+settings.
 
-#### nixpkgs
-
-We publish code-server in nixpkgs but it must be updated manually.
-
-#### npm
-
-We publish code-server as a npm package
-[here](https://www.npmjs.com/package/code-server/v/latest).
-
-This is currently automated with the release process.
+This fork does not publish to npm, Docker Hub, the AUR, Homebrew or nixpkgs.
+Nothing in CI should push outside the organization; if a build needs to be
+shared elsewhere, that is a decision to make deliberately rather than a default.
 
 ## Testing
 
