@@ -81,6 +81,16 @@ echo_latest_version() {
     version="$(curl -fsSLI -o /dev/null -w "%{url_effective}" "https://github.com/$REPO/releases/latest")"
   fi
   version="${version#https://github.com/"$REPO"/releases/tag/}"
+  # With nothing published yet the latest URL redirects to the releases index
+  # instead of a tag, so the prefix above does not strip and the version would
+  # be a URL. Say so rather than building a download URL out of it.
+  case $version in
+    *://*)
+      echoerr "No releases found at https://github.com/$REPO/releases"
+      echoerr "Pass --version to install a specific version."
+      exit 1
+      ;;
+  esac
   version="${version#v}"
   echo "$version"
 }
