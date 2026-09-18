@@ -3,11 +3,11 @@
   "license": "MIT",
   "version": "0.0.0",
   "description": "Run VS Code on a remote server.",
-  "homepage": "https://github.com/coder/code-server",
+  "homepage": "https://github.com/MotusLabs/code-server",
   "bugs": {
-    "url": "https://github.com/coder/code-server/issues"
+    "url": "https://github.com/MotusLabs/code-server/issues"
   },
-  "repository": "https://github.com/coder/code-server",
+  "repository": "https://github.com/MotusLabs/code-server",
   "scripts": {
     "clean": "./ci/build/clean.sh",
     "build": "./ci/build/build-code-server.sh",
@@ -25,7 +25,6 @@
     "prettier": "prettier --write --log-level=warn --cache .",
     "preinstall": "node ./ci/dev/preinstall.js",
     "postinstall": "./ci/dev/postinstall.sh",
-    "publish:npm": "./ci/steps/publish-npm.sh",
     "publish:docker": "./ci/steps/docker-buildx-push.sh",
     "fmt": "npm run prettier && ./ci/dev/doctoc.sh",
     "lint:scripts": "./ci/dev/lint-scripts.sh",

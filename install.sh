@@ -75,12 +75,22 @@ EOF
 
 echo_latest_version() {
   if [ "${EDGE-}" ]; then
-    version="$(curl -fsSL https://api.github.com/repos/coder/code-server/releases | awk 'match($0,/.*"html_url": "(.*\/releases\/tag\/.*)".*/)' | head -n 1 | awk -F '"' '{print $4}')"
+    version="$(curl -fsSL "https://api.github.com/repos/$REPO/releases" | awk 'match($0,/.*"html_url": "(.*\/releases\/tag\/.*)".*/)' | head -n 1 | awk -F '"' '{print $4}')"
   else
     # https://gist.github.com/lukechilds/a83e1d7127b78fef38c2914c4ececc3c#gistcomment-2758860
-    version="$(curl -fsSLI -o /dev/null -w "%{url_effective}" https://github.com/coder/code-server/releases/latest)"
+    version="$(curl -fsSLI -o /dev/null -w "%{url_effective}" "https://github.com/$REPO/releases/latest")"
   fi
-  version="${version#https://github.com/coder/code-server/releases/tag/}"
+  version="${version#https://github.com/"$REPO"/releases/tag/}"
+  # With nothing published yet the latest URL redirects to the releases index
+  # instead of a tag, so the prefix above does not strip and the version would
+  # be a URL. Say so rather than building a download URL out of it.
+  case $version in
+    *://*)
+      echoerr "No releases found at https://github.com/$REPO/releases"
+      echoerr "Pass --version to install a specific version."
+      exit 1
+      ;;
+  esac
   version="${version#v}"
   echo "$version"
 }
@@ -135,6 +145,10 @@ echo_coder_postinstall() {
   echoh
   echoh "Deploy code-server for your team with Coder: https://github.com/coder/coder"
 }
+
+# The repository the release assets are pulled from. This fork carries patches
+# that upstream does not have, so the default has to be the fork.
+REPO=${REPO:-MotusLabs/code-server}
 
 main() {
   if [ "${TRACE-}" ]; then
@@ -359,7 +373,7 @@ install_deb() {
   echoh "Installing v$VERSION of the $ARCH deb package from GitHub."
   echoh
 
-  fetch "https://github.com/coder/code-server/releases/download/v$VERSION/code-server_${VERSION}_$ARCH.deb" \
+  fetch "https://github.com/$REPO/releases/download/v$VERSION/code-server_${VERSION}_$ARCH.deb" \
     "$CACHE_DIR/code-server_${VERSION}_$ARCH.deb"
   sudo_sh_c dpkg -i "$CACHE_DIR/code-server_${VERSION}_$ARCH.deb"
 
@@ -370,7 +384,7 @@ install_rpm() {
   echoh "Installing v$VERSION of the $ARCH rpm package from GitHub."
   echoh
 
-  fetch "https://github.com/coder/code-server/releases/download/v$VERSION/code-server-$VERSION-$ARCH.rpm" \
+  fetch "https://github.com/$REPO/releases/download/v$VERSION/code-server-$VERSION-$ARCH.rpm" \
     "$CACHE_DIR/code-server-$VERSION-$ARCH.rpm"
   sudo_sh_c rpm -U "$CACHE_DIR/code-server-$VERSION-$ARCH.rpm"
 
@@ -396,7 +410,7 @@ install_standalone() {
   echoh "Installing v$VERSION of the $ARCH release from GitHub."
   echoh
 
-  fetch "https://github.com/coder/code-server/releases/download/v$VERSION/code-server-$VERSION-$OS-$ARCH.tar.gz" \
+  fetch "https://github.com/$REPO/releases/download/v$VERSION/code-server-$VERSION-$OS-$ARCH.tar.gz" \
     "$CACHE_DIR/code-server-$VERSION-$OS-$ARCH.tar.gz"
 
   # -w only works if the directory exists so try creating it first. If this

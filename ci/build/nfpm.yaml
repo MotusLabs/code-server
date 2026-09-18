@@ -7,8 +7,8 @@ priority: "optional"
 maintainer: "Joe Previte <joe@coder.com>"
 description: |
   Run VS Code in the browser.
-vendor: "Coder"
-homepage: "https://github.com/coder/code-server"
+vendor: "MotusLabs"
+homepage: "https://github.com/MotusLabs/code-server"
 license: "MIT"
 
 contents:

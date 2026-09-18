@@ -9,12 +9,19 @@ on:
   schedule:
     - cron: "0 16,21 * * *"
 
+permissions:
+  contents: write # To push the update branch.
+  pull-requests: write # To open the update PR.
+
 jobs:
   update:
     runs-on: ubuntu-latest
     env:
       TAG: ${{ inputs.version }}
-      GH_TOKEN: ${{ secrets.HOMEBREW_GITHUB_API_TOKEN }}
+      # A branch pushed with the built-in token does not start other
+      # workflows, so the update PR gets no CI. Set UPDATE_PR_TOKEN to an
+      # organization PAT to get it; without one this still opens the PR.
+      GH_TOKEN: ${{ secrets.UPDATE_PR_TOKEN || github.token }}
 
     steps:
       - name: Fetch latest tag
@@ -59,14 +66,14 @@ jobs:
       - name: Open PR
         if: steps.check.outputs.done == 'false'
         run: |
-          git config --global user.name cdrci
-          git config --global user.email opensource@coder.com
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "update/$VERSION"
           git add .
           git commit -m "Update Code to $VERSION"
           git push -u origin "$(git branch --show)"
           gh pr create \
-            --repo coder/code-server \
+            --repo "$GITHUB_REPOSITORY" \
             --title "Update Code to $VERSION" \
             --body-file .cache/checklist \
             --draft

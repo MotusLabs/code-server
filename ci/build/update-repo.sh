@@ -67,7 +67,7 @@ function update_helm() {
 function update_changelog() {
   local date
   date=$(printf '%(%Y-%m-%d)T\n' -1)
-  local link="https://github.com/coder/code-server/releases/tag/v$version"
+  local link="${GITHUB_SERVER_URL:-https://github.com}/${GITHUB_REPOSITORY:-MotusLabs/code-server}/releases/tag/v$version"
   sed -i.bak "s|## Unreleased|## Unreleased\n\n## [$version]($link) - $date|" CHANGELOG.md
 }
 
@@ -88,9 +88,6 @@ function main() {
 
   # Even if a step failed, still output the last checkmark.
   run-steps "${steps[@]}" || true
-
-  # This step is always manual.
-  echo "- [ ] https://github.com/coder/code-server-aur/pulls" >> .cache/checklist
 }
 
 main "$@"
