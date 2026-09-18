@@ -1,0 +1,43 @@
+Make terminal OSC 52 copy reach the system clipboard
+
+Programs running in the integrated terminal (tmux, vim, Claude Code...) copy by
+emitting OSC 52. xterm's clipboard addon is always loaded and hands the payload
+to IClipboardService.writeText(text, 'clipboard') (see xtermTerminal.ts), but
+BrowserClipboardService files *any* typed write into an in-memory map and never
+touches navigator.clipboard, so on web the copy silently does nothing.
+
+'clipboard' is not an alternate clipboard, it is the system one, so let it fall
+through. 'selection' (OSC 52 's'/'p', the X11 primary selection) keeps the
+in-memory behaviour since browsers have no equivalent.
+
+Only the write path is changed. readText('clipboard') deliberately keeps
+returning the in-memory value, so an OSC 52 read query (ESC]52;c;? BEL) cannot
+be used by a remote program to exfiltrate the user's clipboard back into the
+terminal as input.
+
+This needs a secure context (HTTPS or localhost); without one
+navigator.clipboard is undefined and the execCommand fallback cannot run,
+because OSC 52 arrives asynchronously with no user gesture attached.
+
+To reproduce: open a terminal and run
+  printf '\033]52;c;%s\a' "$(printf hello | base64)"
+then paste. Before this patch the clipboard is unchanged.
+
+Fixes the web half of https://github.com/microsoft/vscode/issues/318254 -- drop
+this patch once that lands upstream.
+Index: code-server/lib/vscode/src/vs/platform/clipboard/browser/clipboardService.ts
+===================================================================
+--- code-server.orig/lib/vscode/src/vs/platform/clipboard/browser/clipboardService.ts
++++ code-server/lib/vscode/src/vs/platform/clipboard/browser/clipboardService.ts
+@@ -124,8 +124,9 @@ export class BrowserClipboardService ext
+ 		// Clear resources given we are writing text
+ 		this.clearResourcesState();
+ 
+-		// With type: only in-memory is supported
+-		if (type) {
++		// With type: only in-memory is supported, except for 'clipboard' which
++		// targets the system clipboard and is handled below.
++		if (type && type !== 'clipboard') {
+ 			this.mapTextToType.set(type, text);
+ 			this.logService.trace('BrowserClipboardService#writeText');
+ 			return;

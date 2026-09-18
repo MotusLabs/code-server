@@ -22,6 +22,12 @@ Code v99.99.999
 
 ## Unreleased
 
+### Fixed
+
+- Copying from the terminal with OSC 52 (used by tmux, vim, Claude Code and
+  similar) now writes to the system clipboard instead of being silently
+  discarded. Requires a secure context (HTTPS or localhost).
+
 ## [4.137.0](https://github.com/coder/code-server/releases/tag/v4.137.0) - 2026-09-11
 
 Code v1.137.0
