@@ -30,6 +30,29 @@ describe("Integrated Terminal", ["--disable-workspace-trust"], {}, () => {
     expect(stdout).toMatch(address)
   })
 
+  // Programs in the terminal (tmux, vim, Claude Code...) copy by emitting OSC
+  // 52.  VS Code hands that to the clipboard service with a type, which the
+  // browser implementation used to keep in memory instead of writing out.
+  test("should copy to the clipboard via OSC 52", async ({ codeServerPage }) => {
+    const origin = new URL(codeServerPage.page.url()).origin
+    await codeServerPage.page.context().grantPermissions(["clipboard-read", "clipboard-write"], { origin })
+
+    const expected = `osc52-${Date.now()}`
+    const encoded = Buffer.from(expected).toString("base64")
+
+    await codeServerPage.focusTerminal()
+
+    // The clipboard is only writable in a secure context, which the tests get
+    // by being served from localhost.  printf turns \033 and \a into the
+    // escape and bell that delimit the sequence.
+    await codeServerPage.page.keyboard.type(`printf '\\033]52;c;${encoded}\\a'`)
+    await codeServerPage.page.keyboard.press("Enter")
+
+    await expect
+      .poll(() => codeServerPage.page.evaluate(() => navigator.clipboard.readText()), { timeout: 20000 })
+      .toBe(expected)
+  })
+
   // TODO@jsjoeio - add test to make sure full code-server path works
   test("should be able to invoke `code-server` to open a file", async ({ codeServerPage }) => {
     const tmpFolderPath = await tmpdir(testName)
