@@ -33,8 +33,10 @@ Most of the work is keeping on top of issues and discussions.
    to a draft release.
 5. Update the resulting draft release with the changelog contents.
 6. Publish the draft release after validating it.
-7. Update the changelog with the release date and bump the Helm chart version
-   once the Docker images have published.
+7. Once the Docker image has published, update the changelog with the release
+   date and bump the Helm chart version by hand. Nothing in CI does this; the
+   chart is not published anywhere, so it only matters if you install from a
+   checkout of this repository.
 
 #### Release Candidates
 
