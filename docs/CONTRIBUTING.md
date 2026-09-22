@@ -257,6 +257,14 @@ Most of the meaty parts are in the Code portion of the codebase under
 Our modifications to Code can be found in the [patches](../patches) directory.
 We pull in Code as a submodule pointing to an upstream release branch.
 
+This fork does not bump that submodule itself. Code updates arrive by merging
+[coder/code-server](https://github.com/coder/code-server), whose scheduled job
+does the bump and refreshes the patch stack against the new release; taking
+them from there means we review one upstream merge instead of owning the
+rebase. `ci/build/update-vscode.sh` is still here for the manual case: run it
+with no `VERSION` to re-refresh the patches and regenerate the webview CSP
+hashes when a merge leaves them conflicting.
+
 In v1 of code-server, we had Code as a submodule and used a single massive patch
 that split the codebase into a front-end and a server. The front-end consisted
 of the UI code, while the server ran the extensions and exposed an API to the
