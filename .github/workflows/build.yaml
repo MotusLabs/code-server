@@ -24,7 +24,6 @@ jobs:
       npm: ${{ steps.filter.outputs.npm }}
       vscode: ${{ steps.filter.outputs.vscode }}
       docs: ${{ steps.filter.outputs.docs }}
-      helm: ${{ steps.filter.outputs.helm }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
       - uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
@@ -38,8 +37,6 @@ jobs:
               - "docs/**"
               - "README.md"
               - "CHANGELOG.md"
-            helm:
-              - "ci/helm-chart/**"
             code:
               - "src/**"
               - "test/**"
@@ -84,18 +81,6 @@ jobs:
             test/package-lock.json
       - run: SKIP_SUBMODULE_DEPS=1 npm ci
       - run: npm run doctoc
-
-  lint-helm:
-    name: Lint Helm chart
-    runs-on: ubuntu-22.04
-    needs: changes
-    if: needs.changes.outputs.helm == 'true'
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v6
-      - uses: bmuschko/setup-kubeconform@e5d264ec1eafe2314e750c429a9da7639dd5a003 # v1.1.0
-        with:
-          kubeconform-version: "0.8.0"
-      - run: kubeconform ci/helm-chart
 
   lint-ts:
     name: Lint TypeScript files
