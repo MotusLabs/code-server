@@ -41,14 +41,21 @@ function update_vscode() {
 
 function refresh_patches() {
   local -i exit_code=0
-  while quiet quilt push 2>&1 ; ! (( exit_code=$? )) ; do
+  local output=""
+  # quilt names the patch that failed on stdout, so capture that output and
+  # print it on failure. Sending it to /dev/null leaves a conflict showing up
+  # as a bare exit code with no indication of which patch broke.
+  while output=$(quilt push 2>&1) ; ! (( exit_code=$? )) ; do
     quilt refresh 2>&1
   done
   case $exit_code in
     # No more patches to apply.
     2) ;;
     # Some error.
-    *) return $exit_code ;;
+    *)
+      echo "$output"
+      return $exit_code
+      ;;
   esac
 }
 
