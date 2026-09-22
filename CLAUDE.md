@@ -22,7 +22,7 @@ npm only — `preinstall` throws under yarn. Node 24 (`.node-version`; the flake
 ## Commands
 
 - `npm run build` — compiles TS to `out/`
-- `npm run test:unit` — jest; the default verification for changes. Single file: `npm run test:unit -- test/unit/node/cli.test.ts` (add `--coverage=false` to skip the 60% coverage gate). `npm run test` is intentionally not a script.
+- `npm run test:unit` — jest; the default verification for changes. Single file: `npm run test:unit -- test/unit/node/cli.test.ts` (add `--coverage=false` to skip the 60% coverage gate). `npm run test` is a stub that prints a pointer to these two and exits 1.
 - e2e requires a full release build first and is slow — run only when explicitly asked (`/e2e` skill)
 - `npm run lint:ts` — eslint `--max-warnings=0` over tracked ts/js, excluding `lib/vscode`
 - `npm run lint:scripts` — shellcheck over tracked shell scripts
