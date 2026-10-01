@@ -29,7 +29,7 @@ Index: code-server/lib/vscode/src/vs/platform/clipboard/browser/clipboardService
 ===================================================================
 --- code-server.orig/lib/vscode/src/vs/platform/clipboard/browser/clipboardService.ts
 +++ code-server/lib/vscode/src/vs/platform/clipboard/browser/clipboardService.ts
-@@ -124,8 +124,9 @@ export class BrowserClipboardService ext
+@@ -132,8 +132,9 @@ export class BrowserClipboardService ext
  		// Clear resources given we are writing text
  		this.clearResourcesState();
  
